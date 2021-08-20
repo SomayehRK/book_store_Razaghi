@@ -2,13 +2,37 @@ from django.contrib import admin
 from .models import *
 
 
-class CustomerAdmin(admin.ModelAdmin):
+@admin.register(AdminSite)
+class AdminSite(admin.ModelAdmin):
     """
-    کاستوم کردن پنل ادمین برای نمایش ایتم های موجود در جدول مشتری ها
+    کاستوم کردن پنل ادمین برای مدیر فروشگاه
     """
-    list_display = ('full_name', 'email')
+    list_display = ('username', 'email',)
+
+    def get_queryset(self, request):
+        return CustomUser.objects.filter(user_type=1)
 
 
-admin.site.register(Customer, CustomerAdmin)
-admin.site.register(CustomUser)
+@admin.register(Staff)
+class AdminStaff(admin.ModelAdmin):
+    """
+        کاستوم کردن پنل ادمین برای کارمندان فروشگاه
+    """
+    list_display = ('username', 'email',)
+
+    def get_queryset(self, request):
+        return CustomUser.objects.filter(user_type=2)
+
+
+@admin.register(Customer)
+class AdminCustomer(admin.ModelAdmin):
+    """
+        کاستوم کردن پنل ادمین برای مشتریان فروشگاه
+    """
+    list_display = ('username', 'email',)
+
+    def get_queryset(self, request):
+        return CustomUser.objects.filter(user_type=3)
+
+
 admin.site.register(Address)

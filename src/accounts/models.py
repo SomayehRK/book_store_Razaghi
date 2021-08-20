@@ -1,39 +1,57 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.contrib.auth import get_user_model
 
 
 class CustomUser(AbstractUser):
     """
-    مدل مربوط به کارمندان شامل کارمندان ساده و ادمین
+    user_type: نقش کاربر
+    """
+    USER_TYPE = (
+        (1, 'مدیر سایت'),
+        (2, 'کارمند'),
+        (3, 'مشتری'),
+    )
+    user_type = models.PositiveSmallIntegerField(choices=USER_TYPE, default=1)
+
+
+class AdminSite(CustomUser):
+    """
+    مدل مدیر فروشگاه
     """
     class Meta:
-        verbose_name_plural = 'کارمندان'
-
-
-class Customer(models.Model):
-    """
-    مدل مربوط به مشتری ها
-    username: نام کاربری مشتری
-    first_name: نام کوچک مشتری
-    last_name: نام خانوادگی مشتری
-    email: ایمیل مشتری
-    password: رمز عبور مشتری
-    """
-    username = models.CharField('نام کاربری', max_length=50)
-    first_name = models.CharField('نام', max_length=50)
-    last_name = models.CharField('نام خانوادگی', max_length=50)
-    email = models.EmailField('ایمیل')
-    password = models.CharField(max_length=50, default=None)
-
-    class Meta:
-        verbose_name_plural = 'مشتری ها'
-
-    @property
-    def full_name(self):
-        return f'{self.first_name} {self.last_name}'
+        proxy = True
+        verbose_name = 'مدیر سایت'
+        verbose_name_plural = 'مدیر سایت'
 
     def __str__(self):
-        return self.full_name
+        return self.email
+
+
+class Staff(CustomUser):
+    """
+    مدل کارمند فروشگاه
+    """
+    class Meta:
+        proxy = True
+        verbose_name = 'کارمند'
+        verbose_name_plural = 'کارمندان'
+
+    def __str__(self):
+        return self.email
+
+
+class Customer(CustomUser):
+    """
+    مدل مشتری
+    """
+    class Meta:
+        proxy = True
+        verbose_name = 'مشتری'
+        verbose_name_plural = 'مشتری ها'
+
+    def __str__(self):
+        return self.email
 
 
 class Address(models.Model):
@@ -45,12 +63,15 @@ class Address(models.Model):
     postal_code: کد پستی محل سکونت
     full_address: آدرس کامل
     """
-    customer = models.ForeignKey(Customer, related_name='customer_id', on_delete=models.CASCADE)
-    province = models.CharField(max_length=50)
-    city = models.CharField(max_length=50)
-    postal_code = models.BigIntegerField()
-    full_address = models.TextField()
+    customer = models.ForeignKey(get_user_model(), verbose_name='مشتری', on_delete=models.CASCADE)
+    province = models.CharField(verbose_name='استان', max_length=50)
+    city = models.CharField(verbose_name='شهر', max_length=50)
+    postal_code = models.BigIntegerField(verbose_name='کد پستی')
+    full_address = models.TextField(verbose_name='آدرس کامل')
 
     class Meta:
         verbose_name_plural = 'آدرس ها'
         ordering = ['customer']
+
+    def __str__(self):
+        return self.full_address

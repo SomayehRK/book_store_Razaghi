@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %} {{ book.name }} {% endblock title%}
+
+{% block subheader %}
+    <div id="subheader" class="row">
+
+            <div id="category_list" class="col-9">
+                {% for c in categories %}
+                        {% if category.slug == c.slug %}
+                        {% endif %}
+                        <a class="m-5" href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+                {% endfor %}
+                {% if not category %}
+                {% endif %}
+                <a class="m-5" href="{% url "book:book_list" %}">همه کتاب ها</a>
+            </div>
+
+            <div class="col-3 cart">
+                {% with total_items=cart|length %}
+                    {% if total_items > 0 %}
+                        سبد خرید شما:
+                        <a href="{% url "cart:cart_detail" %}">
+                        {{ total_items }} item{{ total_items|pluralize }},
+                        {{ cart.get_total_price }}
+                        </a>
+                    {% else %}
+                        سبد خرید شما خالی است.
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+    </div>
+{% endblock subheader %}
+
+
+{% block content %}
+    <div class="product-detail">
+        <h1>{{ book.title }}</h1>
+        <h2>
+            <div>
+                {% for ctg in book.list_category%}
+                    {{ ctg }}
+                {% endfor %}
+            </div>
+        </h2>
+        <p>
+            {{ book.author }}
+        </p>
+        <p class="price">قیمت کتاب:{{ book.price }}</p>
+        <p class="price">قیمت با تخفیف:{{ book.final_price}}</p>
+        <p>
+            {{ book.quantity }}
+        </p>
+        <form action="{% url "cart:cart_add" book.id %}" method="post">
+            {{ cart_book_form }}
+            {% csrf_token %}
+            <input type="submit" value="Add to cart">
+        </form>
+    </div>
+{% endblock content%}

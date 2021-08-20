@@ -1,10 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% load static %}
 
-</body>
+<!DOCTYPE html>
+
+<html  lang="ar" dir="rtl">
+    <head>
+        <meta charset="utf-8" />
+        <title>{% block title %}فروشگاه آنلاین کتاب{% endblock %}</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.rtl.min.css"
+              integrity="sha384-gXt9imSW0VcJVHezoNQsP+TNrjYXoGcrqBZJpry9zJt8PCQjobwmhMGaDHTASo9N"
+              crossorigin="anonymous">
+        <link href="{% static "css/base.css" %}" rel="stylesheet">
+    </head>
+    <body>
+        <div class="navbar navbar-expand-lg mh-100">
+{#            <div id="header" class="row justify-content-between">#}
+                <div class="col">
+                    <a class="navbar-brand" href="#">فروشگاه آنلاین کتاب </a>
+                </div>
+                <div id="search" class="col">
+                    <form class="d-flex" action="{% url 'book:book_list' %}">
+                      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
+                      <button class="btn btn-outline-success" type="submit">جستجو</button>
+                    </form>
+                </div>
+                <div class="col text-left">
+                    {% if user.is_authenticated %}
+                    <p><a href="{% url 'account_logout' %}">خروج</a></p>
+                    {% else %}
+                        <p><a href="{% url 'account_login' %}">ورود</a> |
+                        <a href="{% url 'account_signup' %}">ثبت نام</a></p>
+                    {% endif %}
+                </div>
+
+{#            </div>#}
+        </div>
+
+<div id="subheader" class="row">
+
+            <div id="category_list" class="col-9">
+                {% for c in categories %}
+                        {% if category.slug == c.slug %}
+                        {% endif %}
+                        <a class="m-5" href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+                {% endfor %}
+                {% if not category %}
+                {% endif %}
+                <a class="m-5" href="{% url "book:book_list" %}">همه کتاب ها</a>
+            </div>
+
+            <div class="col-3 cart">
+                {% with total_items=cart|length %}
+                    {% if total_items > 0 %}
+                        Your cart:
+                        <a href="{% url "cart:cart_detail" %}">
+                        {{ total_items }} item{{ total_items|pluralize }},
+                        {{ cart.get_total_price }}
+                        </a>
+                    {% else %}
+                        سبد خرید شما خالی است.
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+    </div>
+
+        <section class="container-fluid">
+            {% block content %}
+            {% endblock content%}
+        </section>
+        <!-- Option 1: Bootstrap Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+                crossorigin="anonymous"></script>
+    </body>
 </html>

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h3>تکمیل سفارش</h3>
+
+    <p>جمع کل: {{ order.get_total_price }}</p><br/>
+
+    <form action="{% url 'order:discount_apply' order.id %}" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Apply">
+    </form>
+
+    <br/>
+    <a href=" " class="btn btn-primary">Pay</a>
+
+{% endblock content %}

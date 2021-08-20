@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}تکمیل سفارش{% endblock %}
+
+{% block content %}
+    <h1>تکمیل سفارش</h1>
+    <div class="row">
+        <div class=" col order-info">
+        <h3>سفارش شما</h3>
+        <ul>
+            {% for item in cart %}
+            <li>
+                {{ item.quantity }}x {{ item.book.title }}
+                <span>{{ item.total_price |floatformat:2 }}</span>
+            </li>
+            {% endfor %}
+            {% if cart.coupon %}
+                <li>
+                    "{{ cart.coupon.code }}" ({{ cart.coupon.discount }}% off)
+                    <span class="neg">- {{ cart.get_discount|floatformat:2 }}</span>
+                </li>
+            {% endif %}
+        </ul>
+        <p>{{ cart.get_total_price_after_discount|floatformat:2 }}   مبلغ کل:</p>
+        </div>
+        <div class="col">
+            <form method="post" class="order-form">
+                {{ form.as_p }}
+                <p><input class="btn-success" type="submit" value="ثبت سفارش"></p>
+                {% csrf_token %}
+            </form>
+        </div>
+
+    </div>
+
+{% endblock %}

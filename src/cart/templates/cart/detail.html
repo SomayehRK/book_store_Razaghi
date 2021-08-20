@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+    Your shopping cart
+{% endblock title%}
+
+{% block content %}
+    <h1>سبد خرید شما</h1>
+    <table class="cart table table-striped">
+        <thead>
+            <tr>
+                <th class="px-4 mx-2">عنوان کتاب</th>
+                <th class="px-4 mx-2">تعداد</th>
+                <th class="px-4 mx-2">حذف</th>
+                <th class="px-4 mx-2">قیمت واحد</th>
+                <th class="px-4 mx-2">قیمت</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart %}
+                {{ item }}
+                {% with book=item.book %}
+                    <tr>
+
+                        <td>{{ book.title }}</td>
+                        <td>
+                            <form action="{% url "cart:cart_add" book.id %}" method="post">
+                                {{ item.update_quantity_form.quantity }}
+{#                                {% if item.quantity > book.quantity %}#}
+{#                                    <p class="alert alert-danger">stock is not enough</p>#}
+{#                                {% endif %}#}
+                                {{ item.update_quantity_form.override }}
+                                <input type="submit" value="Update">
+                                {% csrf_token %}
+                            </form>
+                        </td>
+                        <td>
+                            <form action="{% url "cart:cart_remove" book.id %}" method="post">
+                                <input type="submit" value="Remove">
+                                {% csrf_token %}
+                            </form>
+                        </td>
+                        <td class="num">${{ item.price }}</td>
+                        <td class="num">${{ item.total_price }}</td>
+                    </tr>
+                {% endwith %}
+            {% endfor %}
+
+
+            <tr class="subtotal">
+                <td>مجموع سبد خرید</td>
+                <td colspan="4"></td>
+                <td class="num">${{ cart.get_total_price|floatformat:2 }}</td>
+            </tr>
+            {% if cart.coupon %}
+                <tr>
+                    <td>
+                        "{{ cart.coupon.discount_code }}" coupon
+                        ({{ cart.coupon.value }}% off)
+                    </td>
+                    <td colspan="4"></td>
+                    <td class="num neg">
+                        - {{ cart.get_total_price_after_discount|floatformat:2 }}
+                    </td>
+                </tr>
+            {% endif %}
+
+{#            <tr class="total">#}
+{#                <td>Total</td>#}
+{#                <td colspan="4"></td>#}
+{#                <td class="num">${{ cart.get_total_price }}</td>#}
+{#            </tr>#}
+        </tbody>
+    </table>
+    <p>اعمال کد تخفیف:</p>
+    <form action="{% url "order:discount_apply" %}" method="post">
+        {{ coupon_apply_form }}
+        <input type="submit" value="کد را وارد کنید">
+        {% csrf_token %}
+    </form>
+    <p class="text-right m-5">
+        <a class="btn btn-success p-1" href="{% url "book:book_list" %}" class="button light">ادامه خرید</a>
+        <a class="btn btn-success p-1" href="{% url "order:order_create" %}" class="button">ثبت سفارش</a>
+    </p>
+{% endblock %}
