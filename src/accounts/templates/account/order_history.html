@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{#{% block content %}#}
+{#    {% extends "books/base.html" %}#}
+{#{% load static %}#}
+{#{% block css%}#}
+{#<link rel="stylesheet" href="{% static 'Book/css/base.css'%}">#}
+{#{% endblock css%}#}
+{% block content %}
+{#  <main>#}
+{#    <div class="container">#}
+{##}
+{#    <div class="table-responsive text-nowrap">#}
+{#        <br>#}
+{#    <h2>سفارشات </h2>#}
+{#        <br>#}
+{#        <br>#}
+{#    <div class="card m-2">#}
+{#        {% for ord, ord_itm in list_zip %}#}
+{#            {% for  %}#}
+{#            {% endfor %}#}
+{#            <p>{{ ord }}</p>#}
+{#            {{ p }}#}
+{#            {{ t }}#}
+{#            {{ forloop.counter }}#}
+{#        {% endfor %}#}
+{##}
+{#  </div>#}
+{#  </main>#}
+
+{#{% endblock content %}#}
+
+    <div class="card m-2">
+        {% for ord in orders %}
+            <div class="card-header m-2">
+                    <a href="{% url 'account:order_detail' ord.id %}"><p>   شماره سفارش:{{  ord.id }}</p></a>
+                    <p>   تاریخ سفارش:{{  ord.order_date }}</p>
+                    <p>   وضعیت سفارش:{{  ord.status }}</p>
+                    <p>   قیمت کل سفارش:{{  ord.get_total_price }}</p>
+                    <p>   آدرس ارسال:{{  ord.customer_address }}</p>
+
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock content %}

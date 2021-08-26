@@ -11,30 +11,18 @@ from accounts.models import Address
 
 
 @login_required
-def order_detail(request, order_id):
-    """
-    مشاهده سفارش
-    """
-    order = get_object_or_404(Order, id=order_id)
-    form = DiscountForm()
-    return render(request, 'orders/order.html', {'order': order, 'form': form})
-
-
-@login_required
 def order_create(request):
     """
     ایجاد سفارش از روی سبد خرید
     """
     cart = Cart(request)
-    if request.method == 'POST':
-        form = OrderCreateForm(request.POST)
+    if request.method == 'POST' and request.user:
+
+        form = OrderCreateForm(request.user, request.POST)
         if form.is_valid():
             data = form.cleaned_data
             if data['default_address']:
-                addr = Address.objects.filter(customer=request.user)[0]
-                order = Order.objects.create(customer=request.user, province=addr.province,
-                                             city=addr.city, postal_code=addr.postal_code,
-                                             full_address=addr.full_address)
+                order = Order.objects.create(customer=request.user, customer_address=data['default_address'])
                 for item in cart:
                     OrderItems.objects.create(order=order,
                                               book=item['book'],
@@ -43,15 +31,21 @@ def order_create(request):
                                               )
                     book = Book.objects.get(title=item['book'])
                     book.quantity = book.quantity - item['quantity']
-                    order.status = 'record'
                     book.save()
-                    order.save()
+                if cart.coupon:
+                    order.discount = cart.coupon.value
+                order.status = 'record'
+                order.save()
                 cart.clear()
                 return render(request, 'orders/complete_order.html', {'order': order})
             else:
-                order = Order.objects.create(customer=request.user, province=data['province'],
-                                             city=data['city'], postal_code=data['postal_code'],
-                                             full_address=data['full_address'])
+                user_new_addrr = Address.objects.create(customer=request.user,
+                                                        province=data['province'],
+                                                        city=data['city'],
+                                                        postal_code=data['postal_code'],
+                                                        full_address=data['full_address'])
+                user_new_addrr.save()
+                order = Order.objects.create(customer=request.user, customer_address=user_new_addrr)
                 for item in cart:
                     OrderItems.objects.create(order=order,
                                               book=item['book'],
@@ -60,13 +54,15 @@ def order_create(request):
                                               )
                     book = Book.objects.get(title=item['book'])
                     book.quantity = book.quantity - item['quantity']
-                    order.status = 'record'
                     book.save()
-                    order.save()
+                if cart.coupon:
+                    order.discount = cart.coupon.value
+                order.status = 'record'
+                order.save()
                 cart.clear()
-                return render(request, 'orders/order_create.html', {'order': order})
+                return render(request, 'orders/complete_order.html', {'order': order})
     else:
-        form = OrderCreateForm()
+        form = OrderCreateForm(request.user)
     return render(request, 'orders/order_create.html', {'cart': cart, 'form': form})
 
 

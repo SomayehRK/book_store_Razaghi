@@ -9,7 +9,7 @@
     <form action="{% url 'order:discount_apply' order.id %}" method="post">
         {% csrf_token %}
         {{ form }}
-        <input type="submit" value="Apply">
+        <input type="submit" value="اعمال">
     </form>
 
     <br/>

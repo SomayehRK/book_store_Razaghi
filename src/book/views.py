@@ -4,6 +4,7 @@ from cart.forms import CartAddBookForm
 from django.utils import timezone
 from order.models import CashOff
 from django.db.models import Q
+from django.contrib import messages
 
 
 def book_list(request, category_slug=None):
@@ -36,4 +37,6 @@ def book_detail(request, id, slug):
                   'book/book_detail.html',
                   {'book': book, 'cart_book_form': cart_book_form}
                   )
+
+
 

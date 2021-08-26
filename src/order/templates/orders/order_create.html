@@ -3,30 +3,54 @@
 {% block title %}تکمیل سفارش{% endblock %}
 
 {% block content %}
-    <h1>تکمیل سفارش</h1>
+
     <div class="row">
-        <div class=" col order-info">
-        <h3>سفارش شما</h3>
-        <ul>
-            {% for item in cart %}
-            <li>
-                {{ item.quantity }}x {{ item.book.title }}
-                <span>{{ item.total_price |floatformat:2 }}</span>
-            </li>
-            {% endfor %}
-            {% if cart.coupon %}
-                <li>
-                    "{{ cart.coupon.code }}" ({{ cart.coupon.discount }}% off)
-                    <span class="neg">- {{ cart.get_discount|floatformat:2 }}</span>
-                </li>
-            {% endif %}
-        </ul>
-        <p>{{ cart.get_total_price_after_discount|floatformat:2 }}   مبلغ کل:</p>
+        <div class="col mt-3  mx-2">
+            <h3>سفارش شما</h3>
+            <table class="table mt-5">
+                <thead class="bg-success">
+                    <tr>
+                        <th>عنوان کتاب</th>
+                        <th>تعداد</th>
+                        <th>مبلغ کل</th>
+                        <th>مبلغ با تخفیف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart %}
+                        <tr>
+                            <td>{{ item.book.title }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.total_price |floatformat:2 }}</td>
+                            <td>{{ cart.get_discount|floatformat:2 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
         </div>
-        <div class="col">
+{#        <div class=" col order-info">#}
+{#        <h3 class="mt-3  mx-2">سفارش شما</h3>#}
+{#        <ul>#}
+{#            {% for item in cart %}#}
+{#            <li>#}
+{#                {{ item.quantity }}x {{ item.book.title }}#}
+{#                <span>{{ item.total_price |floatformat:2 }}</span>#}
+{#            </li>#}
+{#            {% endfor %}#}
+{#            {% if cart.coupon %}#}
+{#                <li>#}
+{#                    "{{ cart.coupon.code }}" ({{ cart.coupon.discount }}% off)#}
+{#                    <span class="neg">- {{ cart.get_discount|floatformat:2 }}</span>#}
+{#                </li>#}
+{#            {% endif %}#}
+{#        </ul>#}
+{#        <p>{{ cart.get_total_price_after_discount|floatformat:2 }}   مبلغ کل:</p>#}
+{#        </div>#}
+        <div class="col mt-4  px-5">
             <form method="post" class="order-form">
                 {{ form.as_p }}
-                <p><input class="btn-success" type="submit" value="ثبت سفارش"></p>
+                <p><input class="btn btn-success" type="submit" value="ثبت سفارش"></p>
                 {% csrf_token %}
             </form>
         </div>

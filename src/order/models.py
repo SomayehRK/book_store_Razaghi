@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 import string
 import random
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
 
 
 # تعریف تخفیف ها --------------------------
@@ -21,7 +22,9 @@ class PercentageOff(models.Model):
     """
     name = models.CharField(verbose_name='نوع تخفیف', max_length=50)
     value = models.IntegerField(verbose_name='میزان تخفیف', validators=[MinValueValidator(0), MaxValueValidator(100)])
-    created_by = models.ForeignKey(get_user_model(), verbose_name='ایجاد کننده', on_delete=models.CASCADE,)
+    created_by = models.ForeignKey(get_user_model(), verbose_name='ایجاد کننده',
+                                   on_delete=models.CASCADE, blank=True, null=True
+                                   )
     created_time = models.DateTimeField(verbose_name='تاریخ ایجاد', auto_now_add=True)
     expired_time = models.DateTimeField(verbose_name='تاریخ انقضا')
     active = models.BooleanField(verbose_name='وضعیت اعتبار', default=False)
@@ -36,6 +39,12 @@ class PercentageOff(models.Model):
     def __str__(self):
         return str(self.name)
 
+    # @property
+    # def change_status(self):
+    #     if self.expired_time < timezone.now():
+    #         self.active = False
+    #         self.save()
+
 
 class CashOff(models.Model):
     """
@@ -48,8 +57,10 @@ class CashOff(models.Model):
     active: وضعیت اعتبار
     """
     name = models.CharField(verbose_name='نوع تخفیف', max_length=50)
-    value = models.DecimalField(verbose_name='مقدار تخیف', max_digits=10, decimal_places=2)
-    created_by = models.ForeignKey(get_user_model(), verbose_name='ایجاد کننده', on_delete=models.CASCADE,)
+    value = models.IntegerField(verbose_name='مقدار تخیف')
+    created_by = models.ForeignKey(get_user_model(), verbose_name='ایجاد کننده',
+                                   on_delete=models.CASCADE,blank=True, null=True
+                                   )
     created_time = models.DateTimeField(verbose_name='تاریخ ایجاد', auto_now_add=True)
     expired_time = models.DateTimeField(verbose_name='تاریخ انقضا')
     active = models.BooleanField(verbose_name='وضعیت اعتبار', default=False)
@@ -114,10 +125,8 @@ class Order(models.Model):
                                  related_name='customer')
     order_date = models.DateTimeField(verbose_name='تاریخ ثبت سفارش', auto_now_add=True)
     discount = models.IntegerField(verbose_name='کد تخفیف', blank=True, null=True, default=None)
-    province = models.CharField(verbose_name='استان', max_length=50, blank=True, null=True)
-    city = models.CharField(verbose_name='شهر', max_length=50, blank=True, null=True)
-    postal_code = models.BigIntegerField(verbose_name='کد پستی', blank=True, null=True)
-    full_address = models.TextField(verbose_name='آدرس کامل', blank=True, null=True)
+    customer_address = models.ForeignKey(Address, verbose_name='آدرس های مشتری', on_delete=models.CASCADE, blank=True, null=True)
+
     STATUS = [
         ('ordered', 'سفارش'),
         ('record', 'ثبت')
@@ -153,7 +162,7 @@ class OrderItems(models.Model):
 
     order = models.ForeignKey(Order, verbose_name='کد سفارش', related_name='items', on_delete=models.CASCADE)
     book = models.ForeignKey(Book, verbose_name='کتاب', null=True, on_delete=models.SET_NULL)
-    book_price = models.FloatField(verbose_name='قیمت کتاب')
+    book_price = models.IntegerField(verbose_name='قیمت کتاب')
     book_quantity = models.PositiveSmallIntegerField(verbose_name='نعداد', default=1)
 
     class Meta:

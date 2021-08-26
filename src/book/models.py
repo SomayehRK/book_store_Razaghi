@@ -47,7 +47,7 @@ class Book(models.Model):
     title = models.CharField(verbose_name='عنوان کتاب', max_length=200, db_index=True)
     author = models.CharField(verbose_name='نویسنده', max_length=100)
     slug = models.SlugField(max_length=200, db_index=True)
-    price = models.DecimalField(verbose_name='قیمت کتاب', max_digits=10, decimal_places=2)
+    price = models.IntegerField(verbose_name='قیمت کتاب')
     cash_off = models.ForeignKey('order.CashOff', verbose_name='تخفیف نقدی',
                                  on_delete=models.DO_NOTHING, blank=True, null=True
                                  )
@@ -56,7 +56,7 @@ class Book(models.Model):
                                     )
     quantity = models.IntegerField(verbose_name='موجودی انبار')
     available = models.BooleanField(verbose_name='موجود در انبار', default=True)
-    created_by = models.ForeignKey(CustomUser, verbose_name='ایجاد کننده', on_delete=models.CASCADE)
+    created_by = models.ForeignKey(get_user_model(), verbose_name='ایجاد کننده', on_delete=models.CASCADE)
     create_time = models.DateTimeField(verbose_name='تاریخ ایجاد', auto_now_add=True)
     update_time = models.DateTimeField(verbose_name='تاریخ بروزرسانی', auto_now=True)
 
@@ -79,7 +79,8 @@ class Book(models.Model):
         """
         در صورت وجود تخفیف درصدی میزان تخفیف را محاسبه می کند
         """
-        if self.percent_off is not None:
+        # self.percent_off.change_status()
+        if self.percent_off is not None and self.percent_off.active:
             return (self.percent_off.value / 100) * float(self.price)
         return 0
 
@@ -88,9 +89,11 @@ class Book(models.Model):
         """
         ابتدا بررسی می کند آیا تخفیف نقدی روی کتاب اعمال شده و سپس با توجه به نتیجه بررسی و مشخصه میزان تخفیف درصدی قیمت نهایی کتاب را برمیگرداند
         """
-        if self.cash_off:
-            return self.price - (self.cash_off.value + self.how_much_percent_off)
-        return float(self.price) - self.how_much_percent_off
+        if self.cash_off and self.cash_off.active:
+            price_off = self.price - (self.cash_off.value + self.how_much_percent_off)
+            if price_off > 0:
+                return price_off
+        return self.price - self.how_much_percent_off
 
     def get_absolute_url(self):
         return reverse('book:book_detail', args=[self.id, self.slug])

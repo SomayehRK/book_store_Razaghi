@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+    <div class="card m-2">
+        {% for item in order_items %}
+            <div class="card-header m-2">
+                    <p>   کتاب:{{  item.book }}</p>
+                    <p>   قیمت واحد کتاب بدون تخفیف:{{  item.book.price }}</p>
+                    <p>   قیمت واحد کتاب با تخفیف:{{  item.book.final_price }}</p>
+                    <p>   تعداد:{{  item.book_quantity }}</p>
+                    <p>   قیمت کل:{{  item.get_cost }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock content %}

@@ -19,7 +19,7 @@ def cart_add(request, book_id):
         data = form.cleaned_data
         if data['quantity'] <= book.quantity:
             cart.add(book=book, quantity=data['quantity'], override_quantity=data['override'])
-        elif data['quantity'] > book.quantity:
+        else:
             messages.error(request, 'موجودی انبار کافی نیست!', 'danger')
     return redirect('cart:cart_detail')
 

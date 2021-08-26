@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}ایجاد کتاب{% endblock title %}
+
+{% block content %}
+    <form method="post" action="">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input class="btn bg-success" type="submit" value="ایجاد دسته"/>
+        <a class="btn btn-success" href="{% url 'account:staff_panel' %}">بازگشت به پنل</a>
+    </form>
+{% endblock content %}

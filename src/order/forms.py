@@ -15,9 +15,15 @@ class OrderCreateForm(forms.Form):
 	"""
 	فرم گرفتن آدرس ارسال سفارش
 	"""
+	default_address = forms.ModelChoiceField(label="آدرس های موجود", queryset=Address.objects.all(), required=False,
+											 widget=forms.Select())
+
+	def __init__(self, customer, *args, **kwargs):
+		super(OrderCreateForm, self).__init__(*args, **kwargs)
+		self.fields['default_address'].queryset = customer.address_set.all()
+
 	province = forms.CharField(label='استان', max_length=50, required=False)
 	city = forms.CharField(label='شهر', max_length=50, required=False)
 	postal_code = forms.IntegerField(label='کد پستی', required=False)
 	full_address = forms.CharField(label='آدرس کامل', widget=forms.Textarea, required=False)
-	default_address = forms.BooleanField(label='ارسال به آدرس های پیشین', required=False)
 
