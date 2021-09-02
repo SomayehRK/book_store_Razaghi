@@ -2,123 +2,99 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.db import models
+from django.core.validators import RegexValidator
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+
+USERNAME_REGEX = '^[a-zA-Z0-9.+-]*$'
 
 
-class CustomUserManager(BaseUserManager):
-    def create_user(self, email, password, is_staff, is_superuser, **extra_fields):
-        """
-        ایجاد کاربر
-        """
+class MyUserManager(BaseUserManager):
+    def create_user(self, username, email, is_active=True, password=None ):
         if not email:
-            raise ValueError('Users must have an email address')
-        now = timezone.now()
-        email = self.normalize_email(email)
-        user = self.model(email=email, is_staff=is_staff, is_active=True,
-                          is_superuser=is_superuser, last_login=now, joined_at=now,
-                          **extra_fields)
+            raise ValueError('کابران باید یک ایمیل داشته باشند')
+        user = self.model(is_active=is_active,username=username, email=self.normalize_email(email) )
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password, **extra_fields):
-        """
-        ایجاد کاربر سوپر یوزر
-        """
-        user = self.create_user(email, password, True, True, **extra_fields)
+    def create_superuser(self, username, email, is_active=True, password=None):
+        user = self.create_user(username, email, is_active=is_active, password=password)
+        user.is_admin = True
+        user.is_staff = True
         user.save(using=self._db)
         return user
 
 
 class CustomUser(AbstractBaseUser):
-    """
-    username:نام کاربری
-    email: ایمبل
-    first_name : نام
-    last_name : نام خانوادگی
-    is_superuser : مدیر سایت
-    is_staff : کارمند
-    is_active : فعال
-    last_login : آخرین ورود
-    joined_at : تاریخ ثبت نام
-    """
-    username = models.CharField(verbose_name='نام کاربری', max_length=300, unique=True)
-    email = models.EmailField(verbose_name='ایمیل', max_length=255, unique=True)
+    username = models.CharField(verbose_name='نام کاربری', max_length=300, validators=[
+        RegexValidator(regex=USERNAME_REGEX, message='نام کاربری باید شامل حروف الفبا و یا اعداد باشد',
+                       code='invalid_username')], unique=True)
+
+    email = models.EmailField(verbose_name='آدرس ایمیل', max_length=255, unique=True)
     first_name = models.CharField(verbose_name='نام', max_length=300, blank=True, null=True)
     last_name = models.CharField(verbose_name='نام خانوادگی', max_length=300, blank=True, null=True)
-    is_superuser = models.BooleanField(verbose_name='مدیر سایت', default=False)
-    is_staff = models.BooleanField(verbose_name='کارمند', default=False)
+    is_admin = models.BooleanField(verbose_name='مدیر سایت', default=False, blank=True)
+    is_staff = models.BooleanField(verbose_name='کارمند', default=False, blank=True)
     is_active = models.BooleanField(verbose_name='فعال', default=True)
-    last_login = models.DateTimeField(verbose_name='آخرین ورود', blank=True, null=True)
-    joined_at = models.DateTimeField(verbose_name='تاریخ ثبت نام', auto_now_add=True)
+    objects = MyUserManager()
 
-    objects = CustomUserManager()
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
 
     def __str__(self):
         return self.email
 
     def get_short_name(self):
+        """
+        کاربر با ایمیل خود شناسایی می شود
+        """
         return self.email
 
     def has_perm(self, perm, obj=None):
-        "Does the user have a specific permission?"
-        # Simplest possible answer: Yes, always
+        """
+        Does the user have a specific permission?
+        """
         return True
 
     def has_module_perms(self, app_label):
-        "Does the user have permissions to view the app `app_label`?"
-        # Simplest possible answer: Yes, always
+        """
+        Does the user have permissions to view the app `app_label`?
+        """
         return True
 
 
-class AdminSite(CustomUser):
-    """
-    مدل مدیر فروشگاه
-    """
-    is_staff = True
-    is_superuser = True
-
-    class Meta:
-        proxy = True
-        verbose_name = 'مدیر سایت'
-        verbose_name_plural = 'مدیر سایت'
-
-    def __str__(self):
-        return self.email
-
-
-class Staff(CustomUser):
-    """
-    مدل کارمند فروشگاه
-    """
-    is_staff = True
-    is_superuser = False
-
-    class Meta:
-        proxy = True
-        verbose_name = 'کارمند'
-        verbose_name_plural = 'کارمندان'
-
-    def __str__(self):
-        return self.email
-
-
+# مشتری
 class Customer(CustomUser):
-    """
-    مدل مشتری
-    """
+    is_admin = False
     is_staff = False
-    is_superuser = False
 
     class Meta:
         proxy = True
         verbose_name = 'مشتری'
         verbose_name_plural = 'مشتری ها'
 
-    def __str__(self):
-        return self.email
+
+# کارمند
+class Staff(CustomUser):
+    is_staff = True
+    is_admin = False
+
+    class Meta:
+        proxy = True
+        verbose_name = 'کارمند'
+        verbose_name_plural = 'کارمندان'
+
+
+# مدیرسایت
+class AdminSite(CustomUser):
+    is_staff = True
+    is_admin = True
+
+    class Meta:
+        proxy = True
+        verbose_name = 'مدیر سایت'
+        verbose_name_plural = 'مدیر سایت'
 
 
 class Address(models.Model):

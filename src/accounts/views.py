@@ -10,40 +10,38 @@ from django.http import HttpResponseRedirect, HttpResponse
 from .forms import *
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .utils import Text
+from django.template.defaultfilters import slugify
 
 
-def user_signup(request):
+def register(request, *args, **kwargs):
     """
-    ثبت نام کاربر
+    ثبت نام مشتری ها
     """
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return render(request, 'account/redirect_page.html', )
-    form = CustomUserCreationForm()
-    return render(request, 'account/signup.html', {'form':form})
+    form = CustomerCreationForm(request.POST or None)
+    if form.is_valid():
+        user = form.save()
+        login(request, user)
+        return render(request, 'account/redirect_page.html', )
+    return render(request, "account/signup.html", {'form': form})
 
 
-def user_login(request):
+def login_view(request, *args, **kwargs):
     """
-    ورود کاربران
+    ورود کاربران به سایت
     """
-    if request.method == 'POST':
-        form = LoginForm(data= request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            if user.is_staff == False:
-                return redirect('book:book_list')
-            else:
-                return render(request, 'account/staff_panel.html', )
-    form = LoginForm()
-    return render(request, "account/login.html", {'form': form})
+    form = UserLoginForm(request.POST or None)
+    if form.is_valid():
+        user_obj = form.cleaned_data.get('user_obj')
+        login(request, user_obj)
+        if user_obj.is_staff:
+            return redirect('account:staff_panel')
+        return redirect('book:book_list')
+    return render(request, "account/login.html", {"form": form})
 
 
-def user_logout(request):
+def logout_view(request):
     """
     خروج کاربران
     """
@@ -121,7 +119,7 @@ def order_detail(request, order_id):
     return render(request, 'account/order_detail.html', context)
 
 
-class CreateBookView(CreateView):
+class CreateBookView(LoginRequiredMixin, CreateView):
     """
     افزودن کتاب جدید
     """

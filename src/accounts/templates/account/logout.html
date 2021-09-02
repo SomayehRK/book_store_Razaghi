@@ -5,11 +5,11 @@
 {% block title %}Log Out{% endblock %}
 
 {% block content %}
-    <h1>Log Out</h1>
-    <p>Are you sure you want to log out?</p>
+    <h1>صفحه خروج</h1>
+    <p>آیا مطمئن هستید می خواهید خارج شوید؟</p>
     <form method="post" action="{% url 'account_logout' %}">
         {% csrf_token %}
         {{ form|crispy }}
-        <button class="btn btn-danger" type="submit">Log Out</button>
+        <button class="btn btn-danger" type="submit">خروج</button>
     </form>
 {% endblock content %}

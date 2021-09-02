@@ -2,5 +2,8 @@
 {% load static %}
 
 {% block content %}
-    <a class="btn" href="{% url 'account:edit_profile' %}">تکمیل اطلاعات کاربری</a>
+    <div class="container m-5 justify-content-center redirect">
+        <a class="btn" href="{% url 'account:edit_profile' %}">تکمیل اطلاعات کاربری</a>
+    </div>
+
 {% endblock content %}

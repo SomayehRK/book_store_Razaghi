@@ -6,52 +6,56 @@
     {% if category %}{{ category.name }}{% else %}همه کتاب ها{% endif %}
 {% endblock title%}
 
-{% block subheader %}
-    <div id="subheader" class="row">
-
-            <div id="category_list" class="col-9">
-                {% for c in categories %}
-                        {% if category.slug == c.slug %}
-                        {% endif %}
-                        <a class="m-5" href="{{ c.get_absolute_url }}">{{ c.name }}</a>
-                {% endfor %}
-                {% if not category %}
-                {% endif %}
-                <a class="m-5" href="{% url "book:book_list" %}">همه کتاب ها</a>
-            </div>
-
-            <div class="col-3 cart">
-                {% with total_items=cart|length %}
-                    {% if total_items > 0 %}
-                        Your cart:
-                        <a href="{% url "cart:cart_detail" %}">
-                        {{ total_items }} item{{ total_items|pluralize }},
-                        {{ cart.get_total_price }}
-                        </a>
-                    {% else %}
-                        Your cart is empty.
-                    {% endif %}
-                {% endwith %}
-            </div>
-
-    </div>
-{% endblock subheader %}
 
 {% block content %}
     <div id="main" class="product-list">
-        <h1 class="p-2">
+        <h3 class="p-2">
             {% if category %}{{ category.name }}
             {% else %}
                 همه کتاب ها
             {% endif %}
-        </h1>
-        {% for book in books %}
-            <div class="item p-4">
-                <a href="{{ book.get_absolute_url }}"></a>
-                <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
-                <br>
-                   ریال {{ book.price }}
-            </div>
-        {% endfor %}
+        </h3>
     </div>
+
+    <div id="main" class="row ps-5">
+
+            {% for book in books %}
+                <div class="col-sm border border-light">
+                    <div class="item">
+                        <a href="{{ book.get_absolute_url }}">
+                            <img src="{{ book.image.url }}">
+                        </a>
+                        <br>
+                        <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+                        <br>
+                        {% if book.cash_off or book.percent_off %}
+                            <del>  ریال {{ book.price }}</del>
+                            {{ book.final_price }}
+                        {% else %}
+                              ریال {{ book.price }}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+
+    </div>
+
+
+
+
+{#        {% for book in books %}#}
+{#            <div class="item p-4">#}
+{#                <a href="{{ book.get_absolute_url }}"></a>#}
+{#                <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>#}
+{#                <br>#}
+{#                {% if book.cash_off or book.percent_off %}#}
+{#                    <del>  ریال {{ book.price }}</del>#}
+{#                    {{ book.final_price }}#}
+{#                {% else %}#}
+{#                      ریال {{ book.price }}#}
+{#                {% endif %}#}
+{##}
+{#            </div>#}
+{#        {% endfor %}#}
+{#    </div>#}
 {% endblock content%}

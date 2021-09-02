@@ -18,11 +18,12 @@
 
 
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Sign Up{% endblock title %}
 
 {% block content %}
-    <h2>Sign Up</h2>
+    <h2>صفحه ثبت نام</h2>
     <form method="post" action="">
         {% csrf_token %}
         {{ form.as_p }}
@@ -30,3 +31,37 @@
 {#        <button type="submit">Sign Up</button>#}
     </form>
 {% endblock content %}
+
+
+{#{% block content %}#}
+{#    <div class="container login-container">#}
+{#            <div class="row justify-content-center mt-5">#}
+{#                <div class="col-md-6 login-form-1">#}
+{#                    <h3 class="pb-3">صفحه ثبت نام</h3>#}
+{#                    <form method="post">#}
+{#                        {% csrf_token %}#}
+{#                        <div class="form-group m-2">#}
+{#                            {{ form.username }}#}
+{#                        </div>#}
+{#                        <div class="form-group m-2">#}
+{#                            {{ form.email }}#}
+{#                        </div>#}
+{#                        <div class="form-group m-2">#}
+{#                            {{ form.password1 }}#}
+{#                            <input type="password" class="form-control" placeholder="رمز عبور خد را وارد کنید" value="" />#}
+{#                        </div>#}
+{#                        <div class="form-group m-2">#}
+{#                            {{ form.password2 }}#}
+{#                            <input type="password" class="form-control" placeholder=" مجددا رمز عبور خد را وارد کنید" value="" />#}
+{#                        </div>#}
+{#                        <div class="form-group m-2">#}
+{#                            <input type="submit" class="btn btn-success" value="ثبت نام" />#}
+{#                        </div>#}
+{#                        <div class="form-group">#}
+{#                            <a href="#" class="ForgetPwd">پسورد خود را فراموش کرده اید؟</a>#}
+{#                        </div>#}
+{#                    </form>#}
+{#                </div>#}
+{#            </div>#}
+{#    </div>#}
+{#{% endblock content %}#}

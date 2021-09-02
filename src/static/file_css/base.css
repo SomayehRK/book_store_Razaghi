@@ -1,0 +1,144 @@
+.navbar {
+    background-color: #E8E8E8;
+}
+
+#subheader {
+    height: 50px !important;
+    color:#444;
+}
+#subheader .dropdown-toggle{
+    height: 100px !important;
+    color: white !important;
+}
+#subheader .dropdown-menu{
+    color: #E8E8E8 !important;
+}
+
+#category_list a {
+    color: #E8E8E8 !important;
+}
+
+#button {
+    background-color: #4CBB17!important;
+}
+
+.navbar .form-control-lg{
+    width: 400px !important;
+    height: 15px !important;
+}
+
+.main-section{
+background-color: #F8F8F8;
+margin-top:50px;
+}
+.dropdown{
+float:right;
+padding-right: 30px;
+}
+.btn{
+border:0px;
+margin:10px 0px;
+box-shadow:none !important;
+}
+
+.dropdown .dropdown-menu{
+
+top:53px !important;
+width:100px !important;
+left:41px !important;
+box-shadow: 0 5px 8px 0 rgba(0,255,0,0.3), 0 9px 26px 0 rgba(0,255,0,0.3);
+}
+
+.dropdown2 .dropdown-menu{
+
+top:61px !important;
+width:100px !important;
+left:135px !important;
+box-shadow: 0 5px 8px 0 rgba(0,255,0,0.3), 0 9px 26px 0 rgba(0,255,0,0.3);
+}
+
+.cart-detail{
+padding:15px 0px;
+}
+.cart-detail-img img{
+width:100%;
+height:100%;
+padding-left:15px;
+}
+.cart-detail-product p{
+margin:0px;
+color:#000;
+font-weight:500;
+}
+.cart-detail .price{
+font-size:12px;
+margin-right:10px;
+font-weight:500;
+}
+.cart-detail .count{
+color:#C2C2DC;
+}
+.checkout{
+padding-top: 15px;
+}
+.checkout .btn-primary{
+border-radius:50px;
+height:50px;
+}
+.dropdown-menu:before{
+content: " ";
+position:absolute;
+top:-20px;
+right:50px;
+border:10px solid transparent;
+border-bottom-color:#fff;
+}
+
+.redirect{
+
+    padding: 5%;
+    box-shadow: 0 5px 8px 0 rgba(0,255,0,0.3), 0 9px 26px 0 rgba(0,255,0,0.3);
+}
+
+
+/* login form*/
+
+.login-container{
+    margin-top: 5%;
+    margin-bottom: 5%;
+    /*align-items: center;*/
+    /*margin-right: 25%;*/
+}
+.login-form-1{
+    padding: 5%;
+    box-shadow: 0 5px 8px 0 rgba(0,255,0,0.3), 0 9px 26px 0 rgba(0,255,0,0.3);
+}
+.login-form-1 h3{
+    text-align: center;
+    color: #333;
+}
+
+
+.login-container form{
+    padding: 10%;
+}
+.btnSubmit
+{
+    width: 50%;
+    border-radius: 1rem;
+    padding: 1.5%;
+    border: none;
+    cursor: pointer;
+}
+.login-form-1 .btnSubmit{
+    font-weight: 600;
+    color: #fff;
+    /*background-color: #0062cc;*/
+}
+
+
+.login-form-1 .ForgetPwd{
+    color: #0062cc;
+    font-weight: 600;
+    text-decoration: none;
+}

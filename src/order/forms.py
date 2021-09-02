@@ -15,8 +15,8 @@ class OrderCreateForm(forms.Form):
 	"""
 	فرم گرفتن آدرس ارسال سفارش
 	"""
-	default_address = forms.ModelChoiceField(label="آدرس های موجود", queryset=Address.objects.all(), required=False,
-											 widget=forms.Select())
+	default_address = forms.ModelChoiceField(label="آدرس های موجود", queryset=Address.objects.all(),
+											 required=False, widget=forms.Select())
 
 	def __init__(self, customer, *args, **kwargs):
 		super(OrderCreateForm, self).__init__(*args, **kwargs)

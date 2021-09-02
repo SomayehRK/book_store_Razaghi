@@ -16,13 +16,18 @@ def order_create(request):
     ایجاد سفارش از روی سبد خرید
     """
     cart = Cart(request)
+    try:
+        order = Order.objects.get(customer=request.user, status='ordered')
+    except Order.DoesNotExist:
+        order = Order.objects.create(customer=request.user)
     if request.method == 'POST' and request.user:
 
         form = OrderCreateForm(request.user, request.POST)
         if form.is_valid():
             data = form.cleaned_data
             if data['default_address']:
-                order = Order.objects.create(customer=request.user, customer_address=data['default_address'])
+                order.customer_address = data['default_address']
+                # order = Order.objects.create(customer=request.user, customer_address=data['default_address'], status='ordered')
                 for item in cart:
                     OrderItems.objects.create(order=order,
                                               book=item['book'],
@@ -45,7 +50,8 @@ def order_create(request):
                                                         postal_code=data['postal_code'],
                                                         full_address=data['full_address'])
                 user_new_addrr.save()
-                order = Order.objects.create(customer=request.user, customer_address=user_new_addrr)
+                order.customer_address = user_new_addrr
+                # order = Order.objects.create(customer=request.user, customer_address=user_new_addrr)
                 for item in cart:
                     OrderItems.objects.create(order=order,
                                               book=item['book'],
@@ -63,7 +69,7 @@ def order_create(request):
                 return render(request, 'orders/complete_order.html', {'order': order})
     else:
         form = OrderCreateForm(request.user)
-    return render(request, 'orders/order_create.html', {'cart': cart, 'form': form})
+        return render(request, 'orders/order_create.html', {'cart': cart, 'form': form})
 
 
 @require_POST

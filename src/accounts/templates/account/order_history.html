@@ -4,9 +4,9 @@
 {#{% block content %}#}
 {#    {% extends "books/base.html" %}#}
 {#{% load static %}#}
-{#{% block css%}#}
-{#<link rel="stylesheet" href="{% static 'Book/css/base.css'%}">#}
-{#{% endblock css%}#}
+{#{% block file_css%}#}
+{#<link rel="stylesheet" href="{% static 'Book/file_css/base.file_css'%}">#}
+{#{% endblock file_css%}#}
 {% block content %}
 {#  <main>#}
 {#    <div class="container">#}
@@ -36,7 +36,7 @@
             <div class="card-header m-2">
                     <a href="{% url 'account:order_detail' ord.id %}"><p>   شماره سفارش:{{  ord.id }}</p></a>
                     <p>   تاریخ سفارش:{{  ord.order_date }}</p>
-                    <p>   وضعیت سفارش:{{  ord.status }}</p>
+                    <p>   وضعیت سفارش:{{  ord.get_status_display }}</p>
                     <p>   قیمت کل سفارش:{{  ord.get_total_price }}</p>
                     <p>   آدرس ارسال:{{  ord.customer_address }}</p>
 

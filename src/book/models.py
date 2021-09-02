@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from accounts.models import CustomUser
 from decimal import Decimal
+from django.template.defaultfilters import slugify
 
 
 class Category(models.Model):
@@ -46,6 +47,7 @@ class Book(models.Model):
     category = models.ManyToManyField(Category, verbose_name='دسته', related_name='books')
     title = models.CharField(verbose_name='عنوان کتاب', max_length=200, db_index=True)
     author = models.CharField(verbose_name='نویسنده', max_length=100)
+    image = models.ImageField(upload_to='img_book/', blank=True)
     slug = models.SlugField(max_length=200, db_index=True)
     price = models.IntegerField(verbose_name='قیمت کتاب')
     cash_off = models.ForeignKey('order.CashOff', verbose_name='تخفیف نقدی',
@@ -79,7 +81,6 @@ class Book(models.Model):
         """
         در صورت وجود تخفیف درصدی میزان تخفیف را محاسبه می کند
         """
-        # self.percent_off.change_status()
         if self.percent_off is not None and self.percent_off.active:
             return (self.percent_off.value / 100) * float(self.price)
         return 0
